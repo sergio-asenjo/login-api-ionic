@@ -3,7 +3,7 @@ import os
 
 SERVER = os.getenv("DB_HOST")
 DATABASE = os.getenv("DB_NAME")
-DRIVER = "SQL Server Native Client 11.0"
+DRIVER = "ODBC Driver 17 for SQL Server"
 USERNAME = os.getenv("DB_USER")
 PASSWORD = os.getenv("DB_PASS")
 DATABASE_CONNECTION = f"mssql://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver={DRIVER}"
