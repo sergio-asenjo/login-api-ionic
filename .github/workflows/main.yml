@@ -4,12 +4,14 @@ name: deploy-heroku-fastapi
 on: push
 
 jobs:
-  # Check out the following article for more inspiration on setting up a
-  # standard CI/CD pipeline for most Python projects:
-  # https://jarmos.netlify.app/posts/a-standard-ci-cd-pipeline-for-python-projects/
   deploy:
-    # If the test & lint jobs don't pass,
-    # the deploy job willn't even execute
+    environment: APP
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_INSTANCE: ${{ secrets.DB_INSTANCE }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DB_USER: ${{ secrets.DB_USER }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
