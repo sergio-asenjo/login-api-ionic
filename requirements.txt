@@ -5,3 +5,4 @@ pytest==6.2.5
 requests==2.26.0
 SQLAlchemy==1.4.27
 uvicorn==0.15.0
+pyodbc==4.0.32
