@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine, engine
+from sqlalchemy import create_engine, engine, MetaData
 import os
-import pandas as pd
 
 SERVER = os.getenv("DB_HOST")
 DATABASE = os.getenv("DB_NAME")
@@ -10,6 +9,5 @@ PASSWORD = os.getenv("DB_PASS")
 DATABASE_CONNECTION = f"mssql://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver={DRIVER}"
 
 engine = create_engine(DATABASE_CONNECTION)
+meta = MetaData()
 connection = engine.connect()
-
-df = pd.read_sql_query("SELECT * FROM [dbo].[Usuario]", connection)
