@@ -10,7 +10,7 @@ jobs:
   deploy:
     # If the test & lint jobs don't pass,
     # the deploy job willn't even execute
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
