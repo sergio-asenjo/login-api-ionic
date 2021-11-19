@@ -14,13 +14,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Deploying to Heroku
-        # More details available at:
-        # https://github.com/akhileshns/heroku-deploy
-        uses: akhileshns/heroku-deploy@v3.12.12
+      - name: Set up Python 3.9.6
+        uses: actions/setup-python@v2
         with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          healthcheck: "https://fastapi-ionic-login.herokuapp.com/"
-          rollbackonhealthcheckfailed: true
+          python-version: 3.9.6
+      - name: Install dependecies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test with pytest #finally we will want to run our tests
+        run: |
+            pip install pytest
+            export PYTHONPATH=app
+            pytest
