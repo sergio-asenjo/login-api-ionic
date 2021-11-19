@@ -5,9 +5,9 @@ from schemas.index import User
 
 user = APIRouter()
 
-@user.get("/")
-async def read_users():
-    return connection.execute(users.select()).fetchall()
+# @user.get("/")
+# async def read_users():
+#     return connection.execute(users.select()).fetchall()
 
 @user.get("/{id}")
 async def read_user(id: int):
