@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes.index import user
+from src.routes_user import user
 
 app = FastAPI()
 

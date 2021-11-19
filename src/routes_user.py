@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from config.db import connection
-from models.index import users
-from schemas.index import User
+from src.db import connection
+from src.model_user import users
+from src.schema_user import User
 
 user = APIRouter()
 
