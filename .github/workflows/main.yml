@@ -1,0 +1,24 @@
+# This is the .github/workflows/main.yml
+
+name: deploy-heroku-fastapi
+on: push
+
+jobs:
+  # Check out the following article for more inspiration on setting up a
+  # standard CI/CD pipeline for most Python projects:
+  # https://jarmos.netlify.app/posts/a-standard-ci-cd-pipeline-for-python-projects/
+  deploy:
+    # If the test & lint jobs don't pass,
+    # the deploy job willn't even execute
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.6
+      - name: Install dependecies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
