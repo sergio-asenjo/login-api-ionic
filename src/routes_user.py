@@ -9,7 +9,7 @@ user = APIRouter()
 async def read_user(id: int):
     return connection.execute(users.select().where(users.c.id_usuario == id)).fetchall()
 
-@user.post("/usuario")
+@user.post("/registro")
 async def write_user(user: User):
     connection.execute(users.insert().values(
         nombre_usuario=user.nombre,
