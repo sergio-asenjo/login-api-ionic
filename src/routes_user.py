@@ -5,15 +5,11 @@ from src.schema_user import User
 
 user = APIRouter()
 
-# @user.get("/")
-# async def read_users():
-#     return connection.execute(users.select()).fetchall()
-
-@user.get("/{id}")
+@user.get("/usuario/{id}")
 async def read_user(id: int):
     return connection.execute(users.select().where(users.c.id_usuario == id)).fetchall()
 
-@user.post("/")
+@user.post("/usuario")
 async def write_user(user: User):
     connection.execute(users.insert().values(
         nombre_usuario=user.nombre,
@@ -21,6 +17,16 @@ async def write_user(user: User):
         contrasena_usuario=user.password
     ))
     return connection.execute(users.select()).fetchall()
+
+@user.post("/login")
+async def login_user(user: User):
+    try:
+        response = connection.execute(users.select().where(
+                    users.c.nombre_usuario == user.nombre).where(
+                    users.c.contrasena_usuario == user.password)).fetchone()
+        return {"id": response[0]}
+    except Exception as ex:
+        return {}
 
 @user.put("/{id}")
 async def update_user(id: int, user: User):
