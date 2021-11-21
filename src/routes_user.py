@@ -10,13 +10,12 @@ user = APIRouter()
 PEPPER = os.environ["PEPPER"]
 
 @user.get("/usuario/")
-async def read_user(usuario: str, correo: str):
+async def read_user(usuario: str):
     try:
         exists = connection.execute(users.select().where(
-                        users.c.nombre_usuario == usuario)
-                        .where(users.c.correo_usuario == correo)).fetchone()
+                        users.c.nombre_usuario == usuario)).fetchone()
         if exists:
-            return {"id": exists[0]}
+            return {"id": exists[0], "email": exists[3]}
         return {"usuario": "no existe"}
     except:
         return {"usuario": "no existe"}
