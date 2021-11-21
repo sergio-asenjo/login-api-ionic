@@ -3,5 +3,5 @@ from typing import Optional
 
 class User(BaseModel):
     nombre: str
-    password: str
+    password: Optional[str] = None
     email: Optional[str] = None

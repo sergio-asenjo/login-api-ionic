@@ -9,9 +9,17 @@ from sqlalchemy.exc import IntegrityError
 user = APIRouter()
 PEPPER = os.environ["PEPPER"]
 
-@user.get("/usuario/{id}")
-async def read_user(id: int):
-    return connection.execute(users.select().where(users.c.id_usuario == id)).fetchall()
+@user.get("/usuario/")
+async def read_user(usuario: str, correo: str):
+    try:
+        exists = connection.execute(users.select().where(
+                        users.c.nombre_usuario == usuario)
+                        .where(users.c.correo_usuario == correo)).fetchone()
+        if exists:
+            return {"id": exists[0]}
+        return {"usuario": "no existe"}
+    except:
+        return {"usuario": "no existe"}
 
 @user.post("/registro")
 async def write_user(user: User):
@@ -36,19 +44,48 @@ async def login_user(user: User):
             return {"id": response[0]}
         else:
             return {}
-    except Exception as ex:
+    except:
         return {}
 
-@user.put("/{id}")
-async def update_user(id: int, user: User):
-    connection.execute(users.update().values(
-        nombre_usuario=user.nombre,
-        correo_usuario=user.email,
-        contrasena_usuario=user.password
-    ).where(users.c.id_usuario == id))
-    return connection.execute(users.select()).fetchall()
+@user.patch("/recuperar")
+async def update_pwd_user(user: User):
+    try:
+        exists = connection.execute(users.select().where(users.c.nombre_usuario == user.nombre)
+        .where(users.c.correo_usuario == user.email)).fetchone()
+        if exists:
+            hashed_pwd = bcrypt.hashpw((user.password + PEPPER).encode('utf-8'), bcrypt.gensalt())
+            connection.execute(users.update().values(
+                contrasena_usuario=hashed_pwd
+            ).where(users.c.nombre_usuario == user.nombre)
+            .where(users.c.correo_usuario == user.email))
+            return {'recuperacion': 'exitosa'}
+        else: return {'recuperacion': 'fallida'}
+    except:
+        return {'recuperacion': 'fallida'}
 
-@user.delete("/{id}")
+@user.put("/actualizar/{id}")
+async def update_user(id: int, user: User):
+    try:
+        exists = connection.execute(users.select().where(users.c.id_usuario == id)).fetchone()
+        if exists:
+            hashed_pwd = bcrypt.hashpw((user.password + PEPPER).encode('utf-8'), bcrypt.gensalt())
+            connection.execute(users.update().values(
+                nombre_usuario=user.nombre,
+                contrasena_usuario=hashed_pwd,
+                correo_usuario=user.email
+            ).where(users.c.id_usuario == id))
+            return {'actualizacion': 'exitosa'}
+        else: return {'actualizacion': 'fallida'}
+    except:
+        return {'actualizacion': 'fallida'}
+
+@user.delete("/borrar/{id}")
 async def delete_user(id: int):
-    connection.execute(users.delete().where(users.c.id_usuario == id))
-    return connection.execute(users.select()).fetchall()
+    try:
+        exists = connection.execute(users.select().where(users.c.id_usuario == id)).fetchone()
+        if exists:
+            connection.execute(users.delete().where(users.c.id_usuario == id))
+            return {"eliminacion": "exitosa"}
+        else: return {"eliminacion": "fallida"}
+    except:
+        return {"eliminacion": "fallida"}

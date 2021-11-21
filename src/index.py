@@ -16,4 +16,4 @@ app.include_router(user)
 
 @app.get("/")
 async def index():
-    return {"message": "Hello, World!"}
+    return {"message": "Everything Ok!"}
