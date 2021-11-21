@@ -1,9 +1,13 @@
+import bcrypt
+import os
 from fastapi import APIRouter
 from src.db import connection
 from src.model_user import users
 from src.schema_user import User
+from sqlalchemy.exc import IntegrityError
 
 user = APIRouter()
+PEPPER = os.environ["PEPPER"]
 
 @user.get("/usuario/{id}")
 async def read_user(id: int):
@@ -11,20 +15,27 @@ async def read_user(id: int):
 
 @user.post("/registro")
 async def write_user(user: User):
-    connection.execute(users.insert().values(
-        nombre_usuario=user.nombre,
-        correo_usuario=user.email,
-        contrasena_usuario=user.password
-    ))
-    return connection.execute(users.select()).fetchall()
+    try:
+        hashed_pwd = bcrypt.hashpw((user.password + PEPPER).encode('utf-8'), bcrypt.gensalt())
+        connection.execute(users.insert().values(
+            nombre_usuario=user.nombre,
+            correo_usuario=user.email,
+            contrasena_usuario=hashed_pwd
+        ))
+        return {'registro': '¡Registro exitoso!'}
+    except IntegrityError:
+        return {'registro': '¡Correo ya existe!'}
+
 
 @user.post("/login")
 async def login_user(user: User):
     try:
         response = connection.execute(users.select().where(
-                    users.c.nombre_usuario == user.nombre).where(
-                    users.c.contrasena_usuario == user.password)).fetchone()
-        return {"id": response[0]}
+                    users.c.nombre_usuario == user.nombre)).fetchone()
+        if bcrypt.checkpw((user.password + PEPPER).encode('utf-8'), response[2].encode('utf-8')):
+            return {"id": response[0]}
+        else:
+            return {}
     except Exception as ex:
         return {}
 
